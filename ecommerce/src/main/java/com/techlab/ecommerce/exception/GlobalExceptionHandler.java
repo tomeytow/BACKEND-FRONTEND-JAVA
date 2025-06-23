@@ -9,7 +9,6 @@ import org.springframework.validation.FieldError; // Import this!
 import java.util.HashMap; // Import this!
 import java.util.Map; // Import this!
 
-import com.techlab.ecommerce.exception.StockInsuficienteException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

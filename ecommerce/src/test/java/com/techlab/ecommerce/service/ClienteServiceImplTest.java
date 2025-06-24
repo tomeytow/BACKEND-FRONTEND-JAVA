@@ -3,7 +3,6 @@ package com.techlab.ecommerce.service;
 import com.techlab.ecommerce.model.Cliente;
 import com.techlab.ecommerce.repository.ClienteRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 

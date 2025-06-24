@@ -14,11 +14,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clientes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ClienteController {
 
     private final ClienteService clienteService;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public ClienteController(ClienteService clienteService) {
         this.clienteService = clienteService;
     }

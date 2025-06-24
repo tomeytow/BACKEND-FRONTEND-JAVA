@@ -10,18 +10,22 @@ import com.techlab.ecommerce.service.PedidoService;
 import com.techlab.ecommerce.service.ProductoService;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/pedidos")
 @CrossOrigin(origins = "*")
 public class PedidoController {
+
     private final PedidoService pedidoService;
     private final ClienteService clienteService;
     private final ProductoService productoService;
 
+    @Autowired
     public PedidoController(PedidoService pedidoService, ClienteService clienteService, ProductoService productoService) {
         this.pedidoService = pedidoService;
         this.clienteService = clienteService;
@@ -29,7 +33,10 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<PedidoDTO> crearPedido(@RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<PedidoDTO> crearPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
+        if (pedidoDTO == null || pedidoDTO.getClienteId() == null || pedidoDTO.getLineasPedido() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Cliente cliente = clienteService.obtenerClientePorId(pedidoDTO.getClienteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
         List<Producto> productos = pedidoDTO.getLineasPedido().stream()

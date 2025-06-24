@@ -1,17 +1,20 @@
-// src/main/java/com/techlab/ecommerce/controller/ClienteController.java
-
 package com.techlab.ecommerce.controller;
 
+import com.techlab.ecommerce.dto.ClienteDTO;
+import com.techlab.ecommerce.exception.ResourceNotFoundException;
+import com.techlab.ecommerce.mapper.ClienteMapper;
 import com.techlab.ecommerce.model.Cliente;
 import com.techlab.ecommerce.service.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clientes")
-@CrossOrigin(origins = "*") // Permite solicitudes desde cualquier origen, puedes especificar un dominio en producción
+@CrossOrigin(origins = "*")
 public class ClienteController {
 
     private final ClienteService clienteService;
@@ -20,47 +23,39 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
-    // POST /api/clientes
     @PostMapping
-    public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<ClienteDTO> crearCliente(@RequestBody ClienteDTO clienteDTO) {
+        Cliente cliente = ClienteMapper.toEntity(clienteDTO);
         Cliente nuevoCliente = clienteService.crearCliente(cliente);
-        return new ResponseEntity<>(nuevoCliente, HttpStatus.CREATED);
+        return new ResponseEntity<>(ClienteMapper.toDTO(nuevoCliente), HttpStatus.CREATED);
     }
 
-    // GET /api/clientes/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> obtenerClientePorId(@PathVariable Long id) {
-        return clienteService.obtenerClientePorId(id)
-                .map(cliente -> new ResponseEntity<>(cliente, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ClienteDTO> obtenerClientePorId(@PathVariable Long id) {
+        Cliente cliente = clienteService.obtenerClientePorId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+        return ResponseEntity.ok(ClienteMapper.toDTO(cliente));
     }
 
-    // GET /api/clientes
     @GetMapping
-    public ResponseEntity<List<Cliente>> obtenerTodosLosClientes() {
-        List<Cliente> clientes = clienteService.obtenerTodosLosClientes();
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+    public ResponseEntity<List<ClienteDTO>> obtenerTodosLosClientes() {
+        List<ClienteDTO> dtos = clienteService.obtenerTodosLosClientes()
+                .stream().map(ClienteMapper::toDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    // PUT /api/clientes/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @RequestBody Cliente clienteDetalles) {
-        Cliente clienteActualizado = clienteService.actualizarCliente(id, clienteDetalles);
-        if (clienteActualizado != null) {
-            return new ResponseEntity<>(clienteActualizado, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<ClienteDTO> actualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+        Cliente actualizado = clienteService.actualizarCliente(id, ClienteMapper.toEntity(clienteDTO));
+        if (actualizado == null) throw new ResourceNotFoundException("Cliente no encontrado");
+        return ResponseEntity.ok(ClienteMapper.toDTO(actualizado));
     }
 
-    // DELETE /api/clientes/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCliente(@PathVariable Long id) {
-        if (clienteService.obtenerClientePorId(id).isPresent()) {
-            clienteService.eliminarCliente(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        if (!clienteService.obtenerClientePorId(id).isPresent())
+            throw new ResourceNotFoundException("Cliente no encontrado");
+        clienteService.eliminarCliente(id);
+        return ResponseEntity.noContent().build();
     }
 }

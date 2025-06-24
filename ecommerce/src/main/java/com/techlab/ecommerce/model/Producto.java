@@ -28,6 +28,10 @@ public class Producto {
     @Column(nullable = false) // Mapea el campo 'stock' y no permite valores nulos
     private int stock; // La cantidad de productos disponibles
 
+    @Column(name = "imagen_url") // Mapea el campo 'imagenUrl' a una columna llamada 'imagen_url'
+    private String imagenUrl; // URL de la imagen del producto  
+    
+
     public Producto() {
         // Constructor vacío: Necesario para que JPA pueda crear instancias de Producto
     }

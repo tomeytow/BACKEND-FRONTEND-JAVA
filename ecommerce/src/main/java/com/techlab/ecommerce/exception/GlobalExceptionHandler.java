@@ -1,40 +1,43 @@
-package com.techlab.ecommerce.exception; 
+package com.techlab.ecommerce.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.MethodArgumentNotValidException; // Import this!
-import org.springframework.validation.FieldError; // Import this!
-import java.util.HashMap; // Import this!
-import java.util.Map; // Import this!
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(StockInsuficienteException.class)
-    public ResponseEntity<String> handleStockInsuficienteException(StockInsuficienteException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardError> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new StandardError(LocalDateTime.now(), ex.getMessage(), HttpStatus.NOT_FOUND.value()));
     }
 
-    // NEW HANDLER FOR VALIDATION ERRORS
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST); // Returns 400 with JSON of errors
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<StandardError> handleStock(StockInsuficienteException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new StandardError(LocalDateTime.now(), ex.getMessage(), HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<StandardError> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(new StandardError(LocalDateTime.now(), "Tipo de argumento inválido", HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<StandardError> handleNoSuchElement(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new StandardError(LocalDateTime.now(), ex.getMessage(), HttpStatus.NOT_FOUND.value()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
-        // For debugging, you might want to log the full stack trace:
-        // ex.printStackTrace();
-        return new ResponseEntity<>("Internal server error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<StandardError> handleOther(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new StandardError(LocalDateTime.now(), "Error interno: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 }

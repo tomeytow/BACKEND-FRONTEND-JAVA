@@ -41,6 +41,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+async function obtenerYMostrarProductos() {
+    try {
+        const response = await fetch(`${BASE_URL}/productos`);
+        const productos = await response.json();
+        const galeria = document.getElementById('galeria-productos');
+        galeria.innerHTML = '';
+
+        if (productos.length === 0) {
+            galeria.innerHTML = '<p>No hay productos disponibles.</p>';
+            return;
+        }
+
+        productos.forEach(producto => {
+            const card = document.createElement('div');
+            card.className = 'card-producto';
+            card.innerHTML = `
+                <img src="${producto.imagenUrl || 'https://via.placeholder.com/300'}" alt="${producto.nombre}">
+                <div class="contenido">
+                    <h3>${producto.nombre}</h3>
+                    <p>Precio: $${producto.precio.toLocaleString()}</p>
+                    <p>Stock: ${producto.stock}</p>
+                    <button onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
+                </div>
+            `;
+            galeria.appendChild(card);
+        });
+    } catch (error) {
+        console.error('Error al cargar productos:', error);
+    }
+    
+}
+
     function cargarPedidos() {
         fetch('http://localhost:8080/api/pedidos')
             .then(res => res.json())

@@ -1,7 +1,6 @@
 package com.techlab.ecommerce.controller;
 
 import com.techlab.ecommerce.dto.PedidoDTO;
-import com.techlab.ecommerce.dto.LineaPedidoDTO;
 import com.techlab.ecommerce.exception.ResourceNotFoundException;
 import com.techlab.ecommerce.mapper.PedidoMapper;
 import com.techlab.ecommerce.model.*;

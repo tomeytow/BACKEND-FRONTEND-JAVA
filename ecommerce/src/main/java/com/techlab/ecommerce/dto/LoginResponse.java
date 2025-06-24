@@ -2,16 +2,15 @@ package com.techlab.ecommerce.dto;
 
 public class LoginResponse {
     private String token;
-    private String role; // "admin" o "user"
+    private String role;
     private Long userId;
-
+    // constructor
     public LoginResponse(String token, String role, Long userId) {
         this.token = token;
         this.role = role;
         this.userId = userId;
     }
-
-    // Getters y setters
+    // getters y setters
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
     public String getRole() { return role; }

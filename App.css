@@ -1,0 +1,9 @@
+.app-container {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #faf9f6;
+  min-height: 100vh;
+}
+.main-content {
+  display: flex;
+  margin: 20px;
+}

@@ -1,0 +1,11 @@
+.app-bg {
+  min-height: 100vh;
+  background: linear-gradient(120deg, #fff 0%, #f6eaf7 100%);
+}
+h2, .fw-bold {
+  color: #a83267;
+}
+::-webkit-scrollbar-thumb {
+  background: #a83267;
+  border-radius: 6px;
+}

@@ -20,4 +20,4 @@ CREATE TABLE producto (
 );
 
 INSERT INTO producto (id, nombre, precio, imagen_url, stock)
-VALUES (101, 'Producto especial', 99.99, 'https://via.placeholder.com/150', 10);
+VALUES (101, 'Producto especial', 99.99, 'https://via.placeholder.com/150', 100);
